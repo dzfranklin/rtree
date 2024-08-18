@@ -934,10 +934,10 @@ func (q *queue[N, T]) pop() (qnode[N, T], bool) {
 // BoxDist performs simple box-distance algorithm on rectangles.
 // This is the default algorithm for Nearby.
 func BoxDist[N numeric, T any](targetMin, targetMax [2]N,
-	itemDist func(min, max [2]N, data T) N,
-) (dist func(min, max [2]N, data T, item bool) N) {
+	itemDist func(min, max [2]N, data T) float64,
+) (dist func(min, max [2]N, data T, item bool) float64) {
 	targ := rect[N]{targetMin, targetMax}
-	return func(min, max [2]N, data T, item bool) (dist N) {
+	return func(min, max [2]N, data T, item bool) (dist float64) {
 		if item && itemDist != nil {
 			return itemDist(min, max, data)
 		}
@@ -945,7 +945,7 @@ func BoxDist[N numeric, T any](targetMin, targetMax [2]N,
 	}
 }
 
-func (r *rect[N]) boxDist(b *rect[N]) N {
+func (r *rect[N]) boxDist(b *rect[N]) float64 {
 	var dist N
 	squared := fmax(r.min[0], b.min[0]) - fmin(r.max[0], b.max[0])
 	if squared > 0 {
@@ -955,7 +955,7 @@ func (r *rect[N]) boxDist(b *rect[N]) N {
 	if squared > 0 {
 		dist += squared * squared
 	}
-	return dist
+	return float64(dist)
 }
 
 // Clear will delete all items.
